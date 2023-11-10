@@ -84,7 +84,20 @@ private async Task receiveTask()
                     break;
                 }
                 var message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                WriteToFile("from ws : " + message);
+                WriteToFile("message : " + message);
+
+                if (message=="Accounts")
+                {
+                    WriteToFile("from ws : " + message);
+                    string msg = "Accounts data from tally";
+                    SendMessage(new ArraySegment<byte>(Encoding.UTF8.GetBytes(msg)));
+                    
+                    String ToSend = await HttpToTallyAsync(WindowsService1.Properties.Resources.LedgerNamesOnly);
+                    SendMessage(new ArraySegment<byte>(Encoding.UTF8.GetBytes(ToSend)));
+
+                    //  WriteToFile(" : " + message);
+                }
+
             }
 
         }
