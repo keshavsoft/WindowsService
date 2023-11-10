@@ -91,47 +91,17 @@ private async Task receiveTask()
         {
             try
             {
-
-        
-            WriteToFile("Service is started at " + DateTime.Now);
-            timer.Elapsed += new ElapsedEventHandler(OnElapsedTime);
-            timer.Interval = 5000; //number in milisecinds
-            timer.Enabled = true;
+                WriteToFile("Service is started at " + DateTime.Now);
+                timer.Elapsed += new ElapsedEventHandler(OnElapsedTime);
+                timer.Interval = 10000; //number in milisecinds
+                timer.Enabled = true;
 
                 await client.ConnectAsync(Wsurl,CancellationToken.None);
+                
+                string msg = "hello0123456789123456789123456789123456789123456789123456789";
+                SendMessage(new ArraySegment<byte>(Encoding.UTF8.GetBytes(msg)));
+
                 await receiveTask();
-
-                // restricted to 5 iteration only
-                if (client.State == WebSocketState.Open)
-                {
-                    string msg = "hello0123456789123456789123456789123456789123456789123456789";
-                    ArraySegment<byte> bytesToSend =
-                                new ArraySegment<byte>(Encoding.UTF8.GetBytes(msg));
-                    await client.SendAsync(bytesToSend, WebSocketMessageType.Text,
-                                         true, CancellationToken.None);
-                    //Receive buffer
-                    var receiveBuffer = new byte[200];
-                    //Multipacket response
-                    var offset = 0;
-                    var dataPerPacket = 10; //Just for example
-                    while (true)
-                    {
-                        ArraySegment<byte> bytesReceived =
-                                  new ArraySegment<byte>(receiveBuffer, offset, dataPerPacket);
-                        WebSocketReceiveResult result = await client.ReceiveAsync(bytesReceived,
-                                                                      CancellationToken.None);
-                        //Partial data received
-                        Console.WriteLine("Data:{0}",
-                                         Encoding.UTF8.GetString(receiveBuffer, offset,
-                                                                      result.Count));
-                        offset += result.Count;
-                        if (result.EndOfMessage)
-                            break;
-                    }
-              
-                }
-
-
             }
             catch (Exception error)
             {
@@ -144,26 +114,18 @@ private async Task receiveTask()
         {
             try
             {
-              
                 // restricted to 5 iteration only
                 if (client.State == WebSocketState.Open)
                 {
-           
                     await client.SendAsync(inDataToSend, WebSocketMessageType.Text,
                                          true, CancellationToken.None);
-                
-
                 }
-
-
             }
             catch (Exception error)
             {
                 WriteToFile("error " + error);
             };
-
         }
-
 
         protected override void OnStop()
         {
