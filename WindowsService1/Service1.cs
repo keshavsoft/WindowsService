@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -102,6 +103,23 @@ private async Task receiveTask()
                 string msg = "hello0123456789123456789123456789123456789123456789123456789";
                 SendMessage(new ArraySegment<byte>(Encoding.UTF8.GetBytes(msg)));
 
+                SendSystemInfo();
+
+                //SendMessage(new ArraySegment<byte>(Encoding.UTF8.GetBytes(my_jsondata.ToString())));
+                await receiveTask();
+            }
+            catch (Exception error)
+            {
+                WriteToFile("error " + error);
+            };
+
+        }
+
+       private  void SendSystemInfo()
+        {
+            try
+            {
+           
                 var macAddr =
     (
         from nic in NetworkInterface.GetAllNetworkInterfaces()
@@ -115,9 +133,10 @@ private async Task receiveTask()
                     SysMac = macAddr,
                     Type = "SysInfo"
                 };
-
-                SendMessage(new ArraySegment<byte>(Encoding.UTF8.GetBytes(my_jsondata.ToString())));
-                await receiveTask();
+             
+                string json_data = JsonConvert.SerializeObject(my_jsondata);
+             
+                SendMessage(new ArraySegment<byte>(Encoding.UTF8.GetBytes(json_data)));
             }
             catch (Exception error)
             {
@@ -125,6 +144,7 @@ private async Task receiveTask()
             };
 
         }
+
 
         private async void SendMessage(ArraySegment<byte> inDataToSend)
         {
