@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Net.WebSockets;
 using System.ServiceProcess;
 using System.Text;
@@ -101,6 +102,21 @@ private async Task receiveTask()
                 string msg = "hello0123456789123456789123456789123456789123456789123456789";
                 SendMessage(new ArraySegment<byte>(Encoding.UTF8.GetBytes(msg)));
 
+                var macAddr =
+    (
+        from nic in NetworkInterface.GetAllNetworkInterfaces()
+        where nic.OperationalStatus == OperationalStatus.Up
+        select nic.GetPhysicalAddress().ToString()
+    ).FirstOrDefault();
+
+                var my_jsondata = new
+                {
+                    From = "Service",
+                    SysMac = macAddr,
+                    Type = "SysInfo"
+                };
+
+                SendMessage(new ArraySegment<byte>(Encoding.UTF8.GetBytes(my_jsondata.ToString())));
                 await receiveTask();
             }
             catch (Exception error)
