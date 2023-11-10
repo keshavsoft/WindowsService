@@ -98,6 +98,18 @@ private async Task receiveTask()
                     //  WriteToFile(" : " + message);
                 }
 
+                if (message == "Ledgers")
+                {
+                    WriteToFile("Ledgers : " + message);
+
+                    String ToSend = await HttpToTallyAsync(WindowsService1.Properties.Resources.LedgerNamesOnly);
+                    //SendMessage(new ArraySegment<byte>(Encoding.UTF8.GetBytes(ToSend)));
+                    
+                    XmlDocument xmlDoc = new XmlDocument();
+                    xmlDoc.LoadXml(ToSend);
+                    //  WriteToFile(" : " + message);
+                }
+
             }
 
         }
